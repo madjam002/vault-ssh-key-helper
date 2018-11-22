@@ -12,9 +12,9 @@ So how do you get a signed SSH certificate to connect to the Bastion server to a
 
 ## Solution
 
-This is a command line helper and accompanying web server to retrieve a signed SSH certificate from Vault without actually having Vault exposed to the public internet. It is meant for organisations where lots of users might be accessing Vault and you have implemented the JWT auth backend for Vault so that users can authenticate with a Single Sign On method.
+This is a command line helper and accompanying web server to retrieve a signed SSH certificate from Vault without actually having Vault exposed to the public internet. It is meant for organisations where lots of users might be accessing Vault and you have implemented the JWT auth backend for Vault so that users can authenticate with an OpenID Connect compatible Single Sign On method.
 
-The web server in this repo should be run behind an instance of Keycloak Gatekeeper (https://github.com/keycloak/keycloak-gatekeeper) which will pass through an `X-Auth-Token` header to the server. The server will then give this token to Vault and exchange it for a Vault token. Then, the Vault token will be used to sign the public key and retrieve a signed OpenSSH certificate.
+The web server in this repo should be run behind an instance of Keycloak Gatekeeper (https://github.com/keycloak/keycloak-gatekeeper) which will pass through an `X-Auth-Token` header to the server. The server will then give this token to Vault and exchange it for a Vault token. Then, the Vault token will be used to sign the public key and retrieve a signed OpenSSH certificate. Keycloak Gatekeeper can be used with any OpenID Connect compatible IdP, e.g Azure Active Directory, Google Apps, Microsoft AD FS, etc.
 
 The CLI helper is used to automatically retrieve the public key from the running SSH agent, pass the public key to the web server, and then start a local web server used to return the certificate through a callback URL.
 
