@@ -2,8 +2,8 @@ const express = require('express')
 const helmet = require('helmet')
 const { post, get } = require('axios')
 
-const PORT = 3000
 const {
+  PORT,
   VAULT_ADDR,
   CALLBACK_URL,
   JWT_MOUNT_PATH,
@@ -16,6 +16,10 @@ if (process.env.NODE_ENV !== 'production') {
   console.log('*******')
   console.log('RUNNING IN DEVELOPMENT MODE')
   console.log('*******')
+}
+
+if (!PORT) {
+  throw new Error('PORT not set')
 }
 
 if (!VAULT_ADDR) {
