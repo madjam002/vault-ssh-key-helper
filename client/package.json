@@ -1,0 +1,15 @@
+{
+  "name": "vault-ssh-key-helper",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "Jamie Greeff <jamie@greeff.me>",
+  "bin": {
+    "vault-ssh-key-helper": "./cli.js"
+  },
+  "dependencies": {
+    "execa": "^1.0.0",
+    "express": "^4.16.4",
+    "opn": "^5.4.0"
+  }
+}

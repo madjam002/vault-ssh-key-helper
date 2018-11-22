@@ -1,0 +1,14 @@
+{
+  "name": "vault-ssh-key-helper-server",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "Jamie Greeff <jamie@greeff.me>",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "express": "^4.16.4",
+    "express-async-errors": "^3.1.1",
+    "helmet": "^3.15.0"
+  }
+}
