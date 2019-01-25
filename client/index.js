@@ -1,31 +1,49 @@
-const open = require('opn')
+const opn = require('opn')
 const execa = require('execa')
-const express = require('express')
+const http = require('http')
+const url = require('url')
+const stoppable = require('stoppable')
 
-async function getPubKey() {
+exports.getPublicKey = async () => {
   const { stdout } = await execa('ssh-add', ['-L'])
   return stdout.trim()
 }
 
-exports.getCertificateFlow = async function(serverUrl, callbackPort) {
-  const pubkey = await getPubKey()
-  const encodedPubKey = new Buffer(pubkey).toString('base64')
+exports.getCertificateFlow = async function(
+  publicKey,
+  serverUrl,
+  callbackPort,
+  openBrowserWindow = opn
+) {
+  const encodedPubKey = new Buffer(publicKey).toString('base64')
 
-  const app = express()
+  let handleCallback // gets set later on
 
-  open(serverUrl + '?pubkey=' + encodedPubKey)
+  const handleResponse = (req, res) => {
+    handleCallback(req, res)
+  }
 
-  const server = app.listen(callbackPort)
+  const server = stoppable(http.createServer(handleResponse))
+  server.listen(callbackPort)
+
+  openBrowserWindow(serverUrl + '?pubkey=' + encodedPubKey)
 
   const certificate = await new Promise((resolve, reject) => {
-    app.get('/', (req, res) => {
-      const decodedCertificate = new Buffer(req.query.cert, 'base64').toString()
-      res.send('You can now close this window<script>window.close()</script>')
+    handleCallback = (req, res) => {
+      const parsedUrl = url.parse(req.url, true)
+
+      const decodedCertificate = new Buffer(
+        parsedUrl.query.cert,
+        'base64'
+      ).toString()
+
+      res.writeHead(200, { 'Content-Type': 'text/html' })
+      res.end('You can now close this window<script>window.close()</script>')
       resolve(decodedCertificate)
-    })
+    }
   })
 
-  await new Promise(resolve => server.close(resolve))
+  await new Promise(resolve => server.stop(resolve))
 
   return certificate
 }
